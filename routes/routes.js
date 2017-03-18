@@ -15,7 +15,7 @@ var appRouter = function(app) {
 
     app.get("/character/", function(req, res) {
         var short = 1;
-        if(req.param('name')) {
+        if(req.param('notshort')) {
             short = 0;
         }
         var name = req.param('name').split(' ').join('_');
@@ -26,8 +26,9 @@ var appRouter = function(app) {
             if(!err && response.statusCode == 200) {
                 var $ = cheerio.load(html);
                 var a = $('#mw-content-text').find('p').text();
+                 
                 if(short) {
-                    res.json({text: a.substring(0,100)});
+                    res.json({text: a.substring(0,1000) + '....'});
                 } else {
                     res.json({text: a});
                 }
