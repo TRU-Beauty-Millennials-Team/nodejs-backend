@@ -1,19 +1,10 @@
 var request = require('request')
 var cheerio = require('cheerio'); 
 var http = require('http');
-
+//nodejs, first day 
 var vategoruUrl = 'http://naruto.wikia.com/wiki/Category:Characters?page=';
-var profileUrl = 'http://naruto.wikia.com/wiki';
+var profileUrl = 'http://naruto.wikia.com/wiki/';
 
-var f = () => {
-    var b = 0;
-    for(var i = 0; i < 100; i++)
-    {
-        b = b + 1;
-    }
-    console.log(b);
-    return(b);
-}
 
 var appRouter = function(app) {
     app.get("/", function(req, res) {
@@ -22,14 +13,26 @@ var appRouter = function(app) {
     });
 
 
-    app.get("/character/:name", function(req, res) {
-        var name = req.params.name.split(' ').join('_');
-        var url = profileUrl + name;
+    app.get("/character/", function(req, res) {
+        var short = 1;
+        if(req.param('name')) {
+            short = 0;
+        }
+        var name = req.param('name').split(' ').join('_');
+        var url = profileUrl  + name;
+        console.log(url);
 
         request(url, (err, response, html) => {
             if(!err && response.statusCode == 200) {
                 var $ = cheerio.load(html);
-
+                var a = $('#mw-content-text').find('p').text();
+                if(short) {
+                    res.json({text: a.substring(0,100)});
+                } else {
+                    res.json({text: a});
+                }
+                
+                
             } else {
                 res.json({err: 'error'});
             }
